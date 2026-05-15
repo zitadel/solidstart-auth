@@ -85,6 +85,7 @@
     "authentication",
     "oauth",
     "authjs",
+    "jwt",
     "@auth/core"
   ],
   "private": false,
