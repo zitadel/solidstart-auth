@@ -23,10 +23,12 @@ export type SolidAuthConfig = Omit<AuthConfig, 'raw'>;
 /**
  * Creates a SolidStart Auth handler.
  *
- * Returns `{ GET, POST }` handlers to be exported from your auth API route.
+ * Returns `{ handlers, getSession }` — the same shape as all other ZITADEL
+ * framework packages. Export `handlers.GET` and `handlers.POST` from your
+ * auth API route.
  *
  * @param config - Auth.js configuration
- * @returns Object with GET and POST handler functions
+ * @returns Object with handlers and getSession utility
  *
  * @example
  * ```ts
@@ -34,27 +36,79 @@ export type SolidAuthConfig = Omit<AuthConfig, 'raw'>;
  * import { SolidAuth, type SolidAuthConfig } from '@zitadel/solidstart-auth';
  * import Zitadel from '@auth/core/providers/zitadel';
  *
- * const authOptions: SolidAuthConfig = {
+ * export const { handlers, getSession } = SolidAuth({
  *   providers: [Zitadel({ ... })],
  *   secret: process.env.AUTH_SECRET,
- * };
+ * });
+ * ```
  *
- * export const { GET, POST } = SolidAuth(authOptions);
+ * @example
+ * ```ts
+ * // src/routes/api/auth/[...solidauth].ts
+ * import { handlers } from '~/lib/auth';
+ * export const { GET, POST } = handlers;
  * ```
  */
 export function SolidAuth(config: SolidAuthConfig): {
+  handlers: {
+    GET: (event: { request: Request }) => Promise<Response>;
+    POST: (event: { request: Request }) => Promise<Response>;
+  };
+  /** @deprecated Use `handlers.GET` instead */
   GET: (event: { request: Request }) => Promise<Response>;
+  /** @deprecated Use `handlers.POST` instead */
   POST: (event: { request: Request }) => Promise<Response>;
+  getSession: (request: Request) => Promise<Session | null>;
+  /** @deprecated Use `getSession` instead */
+  auth: (request: Request) => Promise<Session | null>;
+  signIn: (
+    provider?: string,
+    options?: { redirectTo?: string },
+  ) => Promise<Response>;
+  signOut: (options?: { redirectTo?: string }) => Promise<Response>;
 } {
+  config.basePath ??= '/api/auth';
   setEnvDefaults(process.env, config);
 
   async function handler(event: { request: Request }): Promise<Response> {
     return Auth(event.request, config);
   }
 
+  const boundGetSession = (request: Request) => getSession(request, config);
+
+  async function signIn(
+    provider?: string,
+    options: { redirectTo?: string } = {},
+  ): Promise<Response> {
+    const basePath = (config.basePath ?? '/api/auth').replace(/\/$/, '');
+    const params = new URLSearchParams();
+    if (options.redirectTo) params.set('callbackUrl', options.redirectTo);
+    const paramStr = params.toString();
+    const url = provider
+      ? `${basePath}/signin/${provider}${paramStr ? `?${paramStr}` : ''}`
+      : `${basePath}/signin${paramStr ? `?${paramStr}` : ''}`;
+    return Response.redirect(url, 302);
+  }
+
+  async function signOut(
+    options: { redirectTo?: string } = {},
+  ): Promise<Response> {
+    const basePath = (config.basePath ?? '/api/auth').replace(/\/$/, '');
+    const params = new URLSearchParams();
+    if (options.redirectTo) params.set('callbackUrl', options.redirectTo);
+    const paramStr = params.toString();
+    const url = `${basePath}/signout${paramStr ? `?${paramStr}` : ''}`;
+    return Response.redirect(url, 302);
+  }
+
   return {
+    handlers: { GET: handler, POST: handler },
     GET: handler,
     POST: handler,
+    getSession: boundGetSession,
+    auth: boundGetSession,
+    signIn,
+    signOut,
   };
 }
 
@@ -77,6 +131,7 @@ export async function getSession(
   req: Request,
   config: SolidAuthConfig,
 ): Promise<Session | null> {
+  config.basePath ??= '/api/auth';
   setEnvDefaults(process.env, config);
 
   const url = createActionURL(

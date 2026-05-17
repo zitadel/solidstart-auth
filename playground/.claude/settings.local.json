@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(devbox shell -- git log --oneline --graph -10)",
+      "Bash(devbox run -- git log --oneline --graph -10)",
+      "Bash(devbox run:*)",
+      "Bash(devbox shell -- npm audit 2>&1)",
+      "Bash(devbox shell -- bash -c 'npm audit' 2>&1)",
+      "Bash(gh pr list --state open --label dependencies 2>&1)",
+      "Bash(devbox run -- npm view h3 versions --json 2>/dev/null | python3 -c \"import json,sys; v=json.load\\(sys.stdin\\); [print\\(x\\) for x in v if x.startswith\\('1.'\\)]\" | tail -10)",
+      "Bash(npm audit 2>&1)",
+      "Bash(npm ls h3 2>&1)",
+      "Bash(npm view h3 versions --json 2>&1 | tail -20)",
+      "Bash(npm view @solidjs/start version 2>&1)",
+      "Bash(npm view vinxi version 2>&1)",
+      "Bash(npm view h3 versions --json 2>&1 | grep -E '\"1\\\\.15\\\\.')",
+      "Bash(npm install 2>&1)",
+      "Bash(npm install --legacy-peer-deps 2>&1)",
+      "Bash(npm view vinxi@0.5.11 dependencies --json 2>&1 | grep h3)",
+      "Bash(npm view @solidjs/start@1.3.2 dependencies --json 2>&1 | grep vinxi)",
+      "Bash(npm view @solidjs/start@1.3.2 dependencies --json 2>&1 | grep -i vinxi)",
+      "Bash(npm view @solidjs/start@1.3.2 dependencies.vinxi 2>&1)",
+      "Bash(npm view @solidjs/start@1.3.2 dependencies --json 2>&1)",
+      "Bash(npm view @solidjs/start@1.3.2 peerDependencies --json 2>&1)",
+      "Bash(rm -rf /Users/mridang/Code/zitadel/example-solidstart-auth/node_modules && npm install --legacy-peer-deps 2>&1)",
+      "Bash(npm view @auth/solid-start versions --json 2>&1 | tail -10)",
+      "Bash(npm view @auth/solid-start peerDependencies --json 2>&1)",
+      "Bash(npm view @auth/solid-start@0.19.1 peerDependencies --json 2>&1)"
+    ]
+  }
+}
