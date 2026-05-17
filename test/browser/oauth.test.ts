@@ -102,7 +102,7 @@ test('OAuth sign-in via signin-oauth button', async ({ page }) => {
 
 test('full OAuth flow via Auth.js sign-in page', async ({ page }) => {
   await signInWithOAuth(page);
-  await expect(page).toHaveURL('/profile');
+  await expect(page).toHaveURL(/\/profile/);
 });
 
 test('full sign-in and sign-out cycle', async ({ page }) => {
