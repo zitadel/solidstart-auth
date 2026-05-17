@@ -34,6 +34,7 @@ export const { handlers, getSession, signIn, signOut } = SolidAuth({
   ],
   session: { strategy: 'jwt' },
   secret: process.env.AUTH_SECRET!,
+  trustHost: true,
   callbacks: {
     redirect({ url, baseUrl }) {
       try {
