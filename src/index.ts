@@ -23,18 +23,41 @@ export type {
 export type SolidAuthConfig = Omit<AuthConfig, 'raw'>;
 
 /**
+ * SolidStart API route handler event type.
+ *
+ * @public
+ */
+export type SolidAuthEvent = { request: Request };
+
+/**
+ * Either a static {@link SolidAuthConfig} object or a request-scoped
+ * factory `(event) => SolidAuthConfig`.
+ *
+ * The factory form defers config evaluation until request time, which keeps
+ * server-only imports out of any code path the bundler can reach from a
+ * client entry point. Useful when reading config from request-scoped env
+ * (Cloudflare Workers, Deno Deploy) rather than from `process.env`.
+ *
+ * @public
+ */
+export type SolidAuthConfigOrFactory =
+  | SolidAuthConfig
+  | ((event: SolidAuthEvent) => SolidAuthConfig);
+
+/**
  * Creates a SolidStart Auth handler.
  *
- * Returns `{ handlers, getSession }` — the same shape as all other ZITADEL
- * framework packages. Export `handlers.GET` and `handlers.POST` from your
- * auth API route.
+ * Accepts either a {@link SolidAuthConfig} object or a request-scoped
+ * factory `(event) => SolidAuthConfig`. The factory form defers config
+ * evaluation to request time, which keeps server-only imports off any
+ * client-reachable graph.
  *
- * @param config - Auth.js configuration
+ * @param rawConfig - Auth.js configuration object or factory function
  * @returns Object containing handlers and getSession utility
  *
  * @example
  * ```ts
- * // src/lib/auth.ts
+ * // src/lib/auth.ts — object form
  * import { SolidAuth, type SolidAuthConfig } from '@zitadel/solidstart-auth';
  * import Zitadel from '@auth/core/providers/zitadel';
  *
@@ -46,6 +69,19 @@ export type SolidAuthConfig = Omit<AuthConfig, 'raw'>;
  *
  * @example
  * ```ts
+ * // src/lib/auth.ts — factory form (request-scoped env)
+ * import { SolidAuth } from '@zitadel/solidstart-auth';
+ *
+ * export const { handlers, getSession } = SolidAuth((event) => ({
+ *   providers: [Zitadel({
+ *     clientId: event.request.headers.get('x-zitadel-client-id') ?? '',
+ *   })],
+ *   secret: process.env.AUTH_SECRET,
+ * }));
+ * ```
+ *
+ * @example
+ * ```ts
  * // src/routes/api/auth/[...solidauth].ts
  * import { handlers } from '~/lib/auth';
  * export const { GET, POST } = handlers;
@@ -53,15 +89,15 @@ export type SolidAuthConfig = Omit<AuthConfig, 'raw'>;
  *
  * @public
  */
-export function SolidAuth(config: SolidAuthConfig): {
+export function SolidAuth(rawConfig: SolidAuthConfigOrFactory): {
   handlers: {
-    GET: (event: { request: Request }) => Promise<Response>;
-    POST: (event: { request: Request }) => Promise<Response>;
+    GET: (event: SolidAuthEvent) => Promise<Response>;
+    POST: (event: SolidAuthEvent) => Promise<Response>;
   };
   /** @deprecated Use `handlers.GET` instead */
-  GET: (event: { request: Request }) => Promise<Response>;
+  GET: (event: SolidAuthEvent) => Promise<Response>;
   /** @deprecated Use `handlers.POST` instead */
-  POST: (event: { request: Request }) => Promise<Response>;
+  POST: (event: SolidAuthEvent) => Promise<Response>;
   getSession: (request: Request) => Promise<Session | null>;
   /** @deprecated Use `getSession` instead */
   auth: (request: Request) => Promise<Session | null>;
@@ -71,20 +107,31 @@ export function SolidAuth(config: SolidAuthConfig): {
   ) => Promise<Response>;
   signOut: (options?: { redirectTo?: string }) => Promise<Response>;
 } {
-  config.basePath ??= '/api/auth';
-  setEnvDefaults(process.env, config);
+  function resolveConfig(event: SolidAuthEvent): SolidAuthConfig {
+    const c = typeof rawConfig === 'function' ? rawConfig(event) : rawConfig;
+    c.basePath ??= '/api/auth';
+    setEnvDefaults(process.env, c);
+    return c;
+  }
 
-  async function handler(event: { request: Request }): Promise<Response> {
+  function defaultBasePath(): string {
+    if (typeof rawConfig === 'function') return '/api/auth';
+    return (rawConfig.basePath ?? '/api/auth').replace(/\/$/, '');
+  }
+
+  async function handler(event: SolidAuthEvent): Promise<Response> {
+    const config = resolveConfig(event);
     return Auth(event.request, config);
   }
 
-  const boundGetSession = (request: Request) => getSession(request, config);
+  const boundGetSession = (request: Request) =>
+    getSessionFromRaw(request, rawConfig);
 
   async function signIn(
     provider?: string,
     options: { redirectTo?: string } = {},
   ): Promise<Response> {
-    const basePath = (config.basePath ?? '/api/auth').replace(/\/$/, '');
+    const basePath = defaultBasePath();
     const params = new URLSearchParams();
     if (options.redirectTo) params.set('callbackUrl', options.redirectTo);
     const paramStr = params.toString();
@@ -97,7 +144,7 @@ export function SolidAuth(config: SolidAuthConfig): {
   async function signOut(
     options: { redirectTo?: string } = {},
   ): Promise<Response> {
-    const basePath = (config.basePath ?? '/api/auth').replace(/\/$/, '');
+    const basePath = defaultBasePath();
     const params = new URLSearchParams();
     if (options.redirectTo) params.set('callbackUrl', options.redirectTo);
     const paramStr = params.toString();
@@ -114,6 +161,19 @@ export function SolidAuth(config: SolidAuthConfig): {
     signIn,
     signOut,
   };
+}
+
+/**
+ * Internal helper that accepts the factory-or-object form and resolves to a
+ * concrete SolidAuthConfig before delegating to the standalone getSession.
+ */
+async function getSessionFromRaw(
+  request: Request,
+  rawConfig: SolidAuthConfigOrFactory,
+): Promise<Session | null> {
+  const config =
+    typeof rawConfig === 'function' ? rawConfig({ request }) : rawConfig;
+  return getSession(request, config);
 }
 
 /**
