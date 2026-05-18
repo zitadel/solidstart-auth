@@ -17,6 +17,8 @@ export type {
 
 /**
  * Auth.js configuration for SolidStart applications.
+ *
+ * @public
  */
 export type SolidAuthConfig = Omit<AuthConfig, 'raw'>;
 
@@ -48,6 +50,8 @@ export type SolidAuthConfig = Omit<AuthConfig, 'raw'>;
  * import { handlers } from '~/lib/auth';
  * export const { GET, POST } = handlers;
  * ```
+ *
+ * @public
  */
 export function SolidAuth(config: SolidAuthConfig): {
   handlers: {
@@ -129,6 +133,8 @@ export function SolidAuth(config: SolidAuthConfig): {
  *
  * const session = await getSession(request, authOptions);
  * ```
+ *
+ * @public
  */
 export async function getSession(
   req: Request,
