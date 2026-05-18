@@ -28,7 +28,7 @@ export type SolidAuthConfig = Omit<AuthConfig, 'raw'>;
  * auth API route.
  *
  * @param config - Auth.js configuration
- * @returns Object with handlers and getSession utility
+ * @returns Object containing handlers and getSession utility
  *
  * @example
  * ```ts
@@ -114,6 +114,9 @@ export function SolidAuth(config: SolidAuthConfig): {
 
 /**
  * Retrieves the current session on the server side.
+ *
+ * Standalone two-argument form — use this when you don't have a factory
+ * instance but have a request and config available directly.
  *
  * @param req - The current Request object
  * @param config - Auth.js configuration
