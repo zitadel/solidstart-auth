@@ -8,11 +8,11 @@ import { getRequestEvent } from 'solid-js/web';
 const getSessionData = query(async function () {
   'use server';
   const event = getRequestEvent();
-  if (!event) throw redirect('/api/auth/signin');
+  if (!event) throw redirect('/auth/login');
 
   const session = await getSession(event.request);
   if (!session) {
-    throw redirect('/api/auth/signin');
+    throw redirect('/auth/login');
   }
 
   return session;
