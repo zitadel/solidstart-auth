@@ -1,3 +1,31 @@
+/**
+ * Auth.js integration for SolidStart.
+ *
+ * Provides authentication via Auth.js with support for OAuth providers,
+ * credentials, JWT sessions, and SolidStart server route conventions.
+ *
+ * @packageDocumentation
+ *
+ * @example Basic usage
+ * ```ts
+ * // src/lib/auth.ts
+ * import { SolidAuth } from '@zitadel/solidstart-auth';
+ * import Zitadel from '@auth/core/providers/zitadel';
+ *
+ * export const { handlers, getSession, signIn, signOut } = SolidAuth({
+ *   providers: [Zitadel({ clientId: process.env.ZITADEL_CLIENT_ID! })],
+ * });
+ * ```
+ *
+ * @example Mounting the route handler
+ * ```ts
+ * // src/routes/api/auth/[...solidauth].ts
+ * export { GET, POST } from '~/lib/auth';
+ * ```
+ *
+ * @public
+ */
+
 import {
   Auth,
   type AuthConfig,
