@@ -1,30 +1,28 @@
-# SolidStart Auth.js
+# SolidStart Auth
 
-A [SolidStart](https://start.solidjs.com/) integration for
-[Auth.js](https://authjs.dev/) that provides seamless authentication with
+A [SolidStart](https://start.solidjs.com/) integration that provides seamless authentication with
 multiple providers, session management, and SolidStart-native API route
 patterns.
 
-This integration brings the power and flexibility of Auth.js to SolidStart
+This integration brings the power and flexibility of OAuth to SolidStart
 applications with full TypeScript support, SSR-friendly HTTP handling,
 and SolidStart-native patterns including API routes and server actions.
 
 ### Why?
 
 Modern web applications require robust, secure, and flexible authentication
-systems. While Auth.js provides excellent authentication capabilities,
-integrating it with SolidStart applications requires careful consideration of
+systems. Integrating OAuth and session management with SolidStart applications requires careful consideration of
 framework patterns, server-side rendering, and TypeScript integration.
 
 However, a direct integration isn't always straightforward. Different types
 of applications or deployment scenarios might warrant different approaches:
 
-- **API Route Integration:** Auth.js operates at the HTTP level, while
+- **API Route Integration:** OAuth and auth flows operate at the HTTP level, while
   SolidStart uses file-based API routes with GET and POST handler exports. A
   proper integration should bridge this gap by providing handlers that plug
   directly into SolidStart's routing system.
 - **HTTP Request Handling:** SolidStart API routes receive `APIEvent` objects
-  with a standard `request` property. This integration wraps Auth.js core to
+  with a standard `request` property. This integration wraps the auth handler to
   accept these event shapes without manual request bridging.
 - **Session and Request Lifecycle:** Proper session handling in SolidStart
   requires SSR-friendly utilities that work with `createServerData$` and
@@ -34,7 +32,7 @@ of applications or deployment scenarios might warrant different approaches:
   primitive suitable for protecting routes and server functions.
 
 This integration, `@zitadel/solidstart-auth`, aims to provide the flexibility
-to handle such scenarios. It allows you to leverage the full Auth.js ecosystem
+to handle such scenarios. It allows you to leverage the full OAuth provider ecosystem
 while maintaining SolidStart best practices, ultimately leading to a more
 effective and less burdensome authentication implementation.
 
@@ -48,7 +46,7 @@ npm install @zitadel/solidstart-auth @auth/core
 
 ## Usage
 
-To use this integration, call `SolidAuth()` with your Auth.js configuration
+To use this integration, call `SolidAuth()` with your authentication configuration
 and export the resulting `GET` and `POST` handlers from your catch-all auth
 API route.
 
@@ -144,7 +142,7 @@ export function SignOutButton() {
 
 ##### Example: Advanced Configuration with Multiple Providers
 
-This example shows how to use the integration with multiple Auth.js
+This example shows how to use the integration with multiple OAuth
 providers and custom session configuration:
 
 ```ts
@@ -200,7 +198,7 @@ export { authOptions };
 - **Callback URLs:** OAuth providers must be configured with the correct
   callback URL: `[origin]/api/auth/callback/[provider]`.
 - **Type Augmentation:** If you attach additional properties (e.g., roles) to
-  the Auth.js user object, extend your app's types accordingly so consumers of
+  the user session object, extend your app's types accordingly so consumers of
   `session.user` remain type-safe.
 - **Redirect Semantics:** OAuth providers expect real browser navigations during
   sign-in. The client helpers handle this for you — avoid manual `fetch()` calls
@@ -208,12 +206,8 @@ export { authOptions };
 
 ## Useful links
 
-- **[Auth.js](https://authjs.dev/):** The authentication library that this
-  integration is built upon.
 - **[SolidStart](https://start.solidjs.com/):** The framework this integration
   targets.
-- **[Auth.js Providers](https://authjs.dev/getting-started/providers):**
-  Complete list of supported authentication providers.
 
 ## Contributing
 
