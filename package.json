@@ -99,5 +99,8 @@
   "bugs": "https://github.com/zitadel/solidstart-auth/issues",
   "publishConfig": {
     "access": "public"
+  },
+  "overrides": {
+    "h3": "^1.15.11"
   }
 }
