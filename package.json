@@ -53,7 +53,6 @@
     "docs": "typedoc"
   },
   "peerDependencies": {
-    "@auth/core": ">=0.40.0",
     "@solidjs/start": ">=1.0.0",
     "solid-js": ">=1.0.0"
   },
@@ -107,5 +106,8 @@
   },
   "overrides": {
     "h3": "^1.15.11"
+  },
+  "dependencies": {
+    "@auth/core": "^0.40.0"
   }
 }
