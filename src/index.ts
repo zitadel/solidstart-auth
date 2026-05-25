@@ -184,7 +184,6 @@ export function SolidAuth(rawConfig: SolidAuthConfigOrFactory): {
     return `${basePath}/signout${paramStr ? `?${paramStr}` : ''}`;
   }
 
-
   /**
    * Server-side helper to start the Auth.js sign-in flow.
    *
@@ -217,7 +216,6 @@ export function SolidAuth(rawConfig: SolidAuthConfigOrFactory): {
       headers: { Location: signInUrl(options) },
     });
   }
-
 
   /**
    * Server-side helper to start the Auth.js sign-out flow.
