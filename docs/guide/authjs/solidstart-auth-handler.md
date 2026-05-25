@@ -1,11 +1,11 @@
 ---
 title: SolidAuth Factory
-group: Auth.js Provider
+group: OAuth Provider
 ---
 
 # SolidAuth Factory
 
-The `SolidAuth()` factory wires up the Auth.js handler and returns helpers
+The `SolidAuth()` factory wires up the auth handler and returns helpers
 bound to your config. Call it once in `src/lib/auth.ts`:
 
 ```ts

@@ -9,7 +9,7 @@ children:
 
 `@zitadel/solidstart-auth` is an open source library that provides
 authentication for SolidStart applications. It wraps
-[Auth.js](https://authjs.dev/) (`@auth/core`) to bring OAuth, credentials, and
+auth (`@auth/core`) to bring OAuth, credentials, and
 magic-link authentication to SolidStart with a native developer experience.
 
 Through a direct integration into SolidStart's API routes and server

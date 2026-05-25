@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-group: Auth.js Provider
+group: OAuth Provider
 children:
   - ./solidstart-auth-handler.md
   - ./session-data.md
@@ -9,10 +9,10 @@ children:
   - ./server-side/rest-api.md
 ---
 
-# Auth.js Quick Start
+# OAuth Quick Start
 
 This guide walks through setting up `@zitadel/solidstart-auth` with the
-Auth.js provider, suitable for OAuth, magic links, and credentials sign-in.
+OAuth provider, suitable for OAuth, magic links, and credentials sign-in.
 
 ## Installation
 
@@ -52,7 +52,7 @@ Create the SolidStart API route:
 export { GET, POST } from '~/lib/auth';
 ```
 
-All Auth.js endpoints are now served under `/api/auth/*`.
+All auth endpoints are now served under `/api/auth/*`.
 
 ## Set the secret
 
