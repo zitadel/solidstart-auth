@@ -3,6 +3,7 @@ import { getRequestEvent } from 'solid-js/web';
 import { Header } from '~/components/Header';
 import { Footer } from '~/components/Footer';
 import { getSession } from '~/lib/auth';
+import { signIn } from '@zitadel/solidstart-auth/client';
 
 const getHomeSession = query(async function () {
   'use server';
@@ -119,21 +120,31 @@ export default function Home() {
                     </div>
                   </div>
                   <div class="mb-6 flex flex-col gap-3">
-                    <a
-                      href="/api/auth/signin"
-                      data-testid="signin-credentials"
-                      class="flex w-full cursor-pointer items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition duration-200 hover:bg-blue-700"
-                    >
-                      Sign in with Credentials
-                    </a>
                     <button
                       type="button"
                       data-testid="signin-oauth"
-                      onClick={() => window.location.assign('/api/auth/signin')}
-                      class="flex w-full cursor-pointer items-center justify-center rounded-lg border border-blue-600 px-4 py-3 font-semibold text-blue-600 transition duration-200 hover:bg-blue-50"
+                      onClick={() =>
+                        void signIn('mock-oidc', { callbackUrl: '/profile' })
+                      }
+                      class="flex w-full cursor-pointer items-center justify-center rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition duration-200 hover:bg-blue-700"
                     >
                       Sign in with OAuth
                     </button>
+                    <button
+                      type="button"
+                      data-testid="signin-default"
+                      onClick={() => void signIn()}
+                      class="flex w-full cursor-pointer items-center justify-center rounded-lg border border-blue-600 px-4 py-3 font-semibold text-blue-600 transition duration-200 hover:bg-blue-50"
+                    >
+                      Sign in
+                    </button>
+                    <a
+                      href="/api/auth/signin"
+                      data-testid="signin-credentials"
+                      class="flex w-full cursor-pointer items-center justify-center text-sm font-medium text-blue-600 transition duration-200 hover:text-blue-700"
+                    >
+                      Sign in with Credentials
+                    </a>
                   </div>
                   <div class="text-center">
                     <p class="mb-4 text-sm text-gray-500">
