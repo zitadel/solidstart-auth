@@ -109,6 +109,6 @@
     "serialize-javascript": "^7.0.5"
   },
   "dependencies": {
-    "@auth/core": "^0.40.0"
+    "@auth/core": "^0.41.3"
   }
 }
